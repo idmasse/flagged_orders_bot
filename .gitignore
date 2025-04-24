@@ -1,0 +1,7 @@
+.env
+venv/
+__pycache__
+.token.json
+*.csv
+looker.ini
+.DS_store
