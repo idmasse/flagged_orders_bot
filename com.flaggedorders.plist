@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>com.ops_automations.main</string>
+        <key>ProgramArguments</key>
+        <array>
+            <string>/Users/flippackstation5/python_scripts/flagged_orders_bot/venv/bin/python3</string>
+            <string>/Users/flippackstation5/python_scripts/flagged_orders_bot/main.py</string>
+        </array>
+        <key>WorkingDirectory</key>
+        <string>/Users/flippackstation5/python_scripts/flagged_orders_bot</string>
+        <key>StartInterval</key>
+        <integer>14400</integer> <!-- 4 hrs in seconds -->
+        <key>StandardOutPath</key>
+        <string>/Users/flippackstation5/python_scripts/flagged_orders_bot/logs/main.out</string>
+        <key>StandardErrorPath</key>
+        <string>/Users/flippackstation5/python_scripts/flagged_orders_bot/logs/main.err</string>
+    </dict>
+</plist>
