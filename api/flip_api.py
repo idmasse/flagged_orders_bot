@@ -5,7 +5,7 @@ from utils.flip_auth import get_flip_access_token
 from dotenv import load_dotenv
 import os
 
-load_dotenv(override=True)
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
