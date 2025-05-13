@@ -8,11 +8,9 @@ import os
 
 load_dotenv()
 
-# Logging setup
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Config from environment variables
 FLIP_BASE_URL = os.getenv('FLIP_BASE_URL')
 REFRESH_TOKEN = os.getenv('REFRESH_TOKEN')
 APP_PLATFORM = os.getenv('APP_PLATFORM')
@@ -20,7 +18,6 @@ WEB_VERSION = os.getenv('WEB_VERSION')
 DEVICE_FP = os.getenv('DEVICE_FP')
 GET_ACCESS_TOKEN_THROUGH_REFRESH_TOKEN_PATH = os.getenv('GET_ACCESS_TOKEN_THROUGH_REFRESH_TOKEN_PATH')
 
-# In-memory token cache
 TOKEN_CACHE = {
     'data': None,
     'last_updated': None
@@ -41,7 +38,6 @@ def is_token_valid(token_data):
     # Current time in milliseconds
     current_time = int(time.time() * 1000)
     
-    # Check token expiration
     if current_time >= token_data['data']['auth']['expiresAt']:
         logger.info("Token has expired")
         return False

@@ -14,15 +14,13 @@ LOOK_ID = '851'
 def fetch_and_cancel_soid_orders():
     logger.info("Starting process to fetch and cancel SOID orders from Looker and Flip API.")
 
-    # Initialize Looker SDK and fetch data.
     sdk_instance = looker_credentials()
     look_data = get_look_data(sdk_instance, LOOK_ID)
 
-    # Extract buyer order codes.
+    #extract buyer order codes
     buyer_order_codes = [entry.get("flip_orders_all.orderid") for entry in look_data]
     logger.info(f"Extracted {len(buyer_order_codes)} buyer order codes from Look data.")
 
-    # Get Flip access token once.
     token = get_flip_access_token()
     if token:
         logger.info("Successfully obtained Flip access token.")
@@ -30,7 +28,7 @@ def fetch_and_cancel_soid_orders():
         logger.error("Failed to obtain Flip access token.")
         raise ValueError("Token could not be retrieved.")
 
-    # Process each buyer order code.
+    # process each buyer order code
     for code in buyer_order_codes:
         if not code:
             logger.warning("Encountered an empty or None buyer order code, skipping.")

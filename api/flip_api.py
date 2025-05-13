@@ -18,17 +18,16 @@ X_FLIPINATOR_TOOLS = os.getenv('X_FLIPINATOR_TOOLS')
 MAX_RETRIES_FLIP = int(os.getenv('MAX_RETRIES_FLIP', 1))
 
 def get_order_status_from_flip(order_id, limit=250):
-    """Fetches order status from flip"""
     if not FLIP_BASE_URL or not FLIP_ORDERS_PATH:
         logging.error("Flip API URL or Path not configured")
-        return None, None # Return None for data and status code
+        return None, None #return None for data and status code
     if not get_flip_access_token:
          logging.error("Flip access token function not available (import failed).")
          return None, None
 
     base_url = f"{FLIP_BASE_URL}{FLIP_ORDERS_PATH}"
     params = {'page': 1, 'limit': limit, 'customerOrderId': order_id}
-    url = base_url # requests handles appending params from the `params` dict
+    url = base_url # requests auto appends params from the dict
     last_status_code = None
 
     for attempt in range(MAX_RETRIES_FLIP + 1):
@@ -45,7 +44,7 @@ def get_order_status_from_flip(order_id, limit=250):
 
         try:
             logging.debug(f"Attempt {attempt+1}: Calling Flip API: GET {url} with params {params}")
-            response = requests.get(url, headers=headers, params=params, timeout=30) # Added timeout
+            response = requests.get(url, headers=headers, params=params, timeout=30)
             last_status_code = response.status_code
             logging.debug(f"Flip API Response Status: {last_status_code}")
 
@@ -54,7 +53,7 @@ def get_order_status_from_flip(order_id, limit=250):
                     data = response.json()
                     logging.debug(f"Flip API Response Data: {data}")
                     return data, last_status_code
-                except ValueError: # Includes JSONDecodeError
+                except ValueError:
                     logging.error(f"Failed to decode JSON response from Flip API. Content: {response.text}")
                     return None, last_status_code
 
@@ -63,38 +62,32 @@ def get_order_status_from_flip(order_id, limit=250):
                 if attempt < MAX_RETRIES_FLIP:
                     logging.info("Retrying after potential token refresh...")
                     time.sleep(1)
-                    continue # Retry the loop
+                    continue #retry the loop
                 else:
                     logging.error("Max retries reached for Flip API after 401.")
-                    break # Exit loop
+                    break # exit loop
 
             else:
                 logging.error(f"Flip API request failed with status {last_status_code}: {response.text}")
-                break # Exit loop for other errors
+                break # exit loop for other errors
 
         except requests.exceptions.RequestException as e:
             logging.error(f"Error during Flip API request: {e}")
             last_status_code = getattr(e.response, 'status_code', None)
             if attempt < MAX_RETRIES_FLIP:
                 logging.warning(f"Retrying Flip API call after error (Attempt {attempt + 1}/{MAX_RETRIES_FLIP + 1})...")
-                time.sleep(2) # Wait longer after connection errors
+                time.sleep(2) #wait longer after connection errors
                 continue
             else:
                  logging.error("Max retries reached for Flip API after connection error.")
                  break
 
-    return None, last_status_code # Return None if all retries fail
+    return None, last_status_code # return None if all retries fail
 
 def disable_sku(sku, audit_status, token):
     headers = {
         "accept": "application/json, text/plain, */*",
         "authorization": f"Bearer {token}",
-        "content-type": "application/json",
-        "origin": "https://flipmagic.flip.shop",
-        "referer": "https://flipmagic.flip.shop/",
-        "user-agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                       "AppleWebKit/537.36 (KHTML, like Gecko) "
-                       "Chrome/135.0.0.0 Safari/537.36"),
         "x-flipinator-tools": X_FLIPINATOR_TOOLS
     }
     payload = {
@@ -114,17 +107,11 @@ def disable_sku(sku, audit_status, token):
             logger.error(f"Response status code: {e.response.status_code}")
             logger.error(f"Response content: {e.response.text}")
 
-# Function to lookup order using buyer_order_code and return the order id
 def lookup_order(buyer_order_code, token):
     params = {"page": 1, "limit": 10, "customerOrderId": buyer_order_code}
     headers = {
         "accept": "application/json, text/plain, */*",
         "authorization": f"Bearer {token}",
-        "content-type": "application/json",
-        "origin": "https://flipmagic.flip.shop",
-        "referer": "https://flipmagic.flip.shop/",
-        "user-agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"),
         "x-flipinator-tools": X_FLIPINATOR_TOOLS
     }
     
@@ -137,7 +124,6 @@ def lookup_order(buyer_order_code, token):
         orders = data.get("data", [])
         
         if orders:
-            # Assuming we pick the first order if multiple are returned
             order_id = orders[0].get("id")
             if order_id:
                 logger.info(f"Found order id {order_id} for buyer_order_code {buyer_order_code}")
@@ -150,18 +136,12 @@ def lookup_order(buyer_order_code, token):
         logger.error(f"Error looking up order for {buyer_order_code}: {e}")
     return None
 
-# Function to cancel an order using its order id
 def cancel_order(order_id, token):
     flip_cancel_orders_url = f'{FLIP_BASE_URL}{FLIP_CANCEL_ORDERS_PATH}'
     url = flip_cancel_orders_url.format(order_id=order_id)
     headers = {
         "accept": "application/json, text/plain, */*",
         "authorization": f"Bearer {token}",
-        "content-type": "application/json",
-        "origin": "https://flipmagic.flip.shop",
-        "referer": "https://flipmagic.flip.shop/",
-        "user-agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"),
         "x-flipinator-tools": X_FLIPINATOR_TOOLS
     }
     payload = {

@@ -64,11 +64,11 @@ def fetch_convictional_orders(start_date, end_date, flagged_filter):
 
         except requests.exceptions.HTTPError as e:
             logging.error(f"HTTP Error fetching Convictional orders: {e.response.status_code} - {e.response.text}")
-            break # Stop fetching on HTTP error
+            break # Stop on HTTP error
         except requests.exceptions.RequestException as e:
             logging.error(f"Request Exception fetching Convictional orders: {e}")
-            break # Stop fetching on connection error
-        except ValueError: # Includes JSONDecodeError
+            break # Stop on connection error
+        except ValueError:
             logging.error(f"Failed to decode JSON response from Convictional API. Status: {response.status_code}, Content: {response.text}")
             break
         except Exception as e:

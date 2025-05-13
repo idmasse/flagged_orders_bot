@@ -1,5 +1,3 @@
-import os
-import requests
 import pandas as pd
 import logging
 from api.flip_api import lookup_order, cancel_order
@@ -11,7 +9,6 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# Main process: read the CSV, check flagged_message, lookup the order, and cancel it
 def process_and_cancel_orders_from_csv(csv_file):
     token = get_flip_access_token()
     if not token:
@@ -27,7 +24,7 @@ def process_and_cancel_orders_from_csv(csv_file):
 
     for index, row in df.iterrows():
         flagged_message = str(row.get("flagged_message", "")).lower().strip()
-        # Only proceed if flagged_message contains one of the required substrings
+        #only proceed if flagged_message contains one of the flagged messages
         if ("item is out of stock unexpectedly" not in flagged_message and
             "cannot be a variant with components" not in flagged_message):
             logger.info(f"Skipping cancellation for row {index} as flagged_message does not meet criteria.")

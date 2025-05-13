@@ -20,7 +20,6 @@ def write_to_csv(filepath, data_rows, header):
         return
     
     try:
-        # Only attempt to make directories if there is a directory part in the filepath
         directory = os.path.dirname(filepath)
         if directory:
             os.makedirs(directory, exist_ok=True)
@@ -39,12 +38,12 @@ def write_to_csv(filepath, data_rows, header):
 def fetch_and_process_flagged_orders():
     """Fetches flagged orders, gets Flip status, filters, and saves to CSV."""
     logging.info("--- Starting processing of FLAGGED orders ---")
-    # Determine date range
+    # set date range
     start_date = get_yesterday_date()
     end_date = get_today_date()
     logging.info(f"Using date range: {start_date} to {end_date}")
 
-    # Fetch flagged orders from Convictional
+    # fetch flagged orders from Convictional
     convictional_orders = fetch_convictional_orders(start_date, end_date, flagged_filter=True)
     if not convictional_orders:
         logging.info("No flagged orders fetched from Convictional for this date range.")
@@ -68,8 +67,8 @@ def fetch_and_process_flagged_orders():
         logging.info(f"Getting Flip status for Convictional Order {conv_order_id} (Buyer Code: {buyer_order_code})...")
         flip_data, status_code = get_order_status_from_flip(buyer_order_code)
 
-        # Process based on Flip API result
-        flip_order_state = "Error or Not Found"  # Default status
+        # process based on Flip API result
+        flip_order_state = "Error or Not Found"  #default status
         if flip_data and flip_data.get("data"):
             if flip_data["data"]:
                 flip_order_state = flip_data["data"][0].get("state", "State Not Found")
@@ -82,7 +81,7 @@ def fetch_and_process_flagged_orders():
         else:
             logging.warning(f"Failed to get Flip data for {buyer_order_code} (No specific status code returned).")
 
-        # Filter based on the Flip order state
+        # filter based on the Flip order state
         if flip_order_state == ALLOWED_FLIP_STATE:
             processed_orders.append([
                 conv_order_id,
@@ -95,7 +94,6 @@ def fetch_and_process_flagged_orders():
         else:
             logging.info(f"Order {conv_order_id} skipped. Flip state '{flip_order_state}' != '{ALLOWED_FLIP_STATE}'.")
 
-    # Write valid orders to CSV (overwriting previous content)
     if processed_orders:
         write_to_csv(FLAGGED_ORDERS_CSV, processed_orders, header)
     else:

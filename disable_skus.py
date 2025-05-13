@@ -1,5 +1,3 @@
-import os
-import requests
 import pandas as pd
 import logging
 from utils.flip_auth import get_flip_access_token
@@ -34,15 +32,15 @@ def disable_all_flagged_skus(file_path):
         flagged_message = str(row['flagged_message']).strip().lower()
         buyer_item_codes = str(row['buyer_item_codes']).strip()
 
-        # Only process rows if flagged_message contains one of the required conditions.
+        #only process rows if flagged_message contains one of the required conditions
         if ("item is out of stock unexpectedly" in flagged_message or
             "cannot be a variant with components" in flagged_message):
 
-            # Extract SKUs from buyer_item_codes (handling multiple SKUs separated by semicolons)
+            # extract SKUs from buyer_item_codes
             skus = [sku.strip() for sku in buyer_item_codes.split(';') if sku.strip()]
             for sku in skus:
                 audit_status = "connectivity"
-                # Update audit_status if flagged_message contains the variant components error.
+                # update audit_status if flagged_message contains correct error message
                 if "cannot be a variant with components" in flagged_message:
                     audit_status = "unsupportedBundle"
                 disable_sku(sku, audit_status, token)
